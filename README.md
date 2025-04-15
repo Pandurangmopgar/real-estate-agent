@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Multi-Agent Real Estate Assistant
 
 A modern, full-stack, responsive Next.js 14 web application featuring a multi-agent chatbot system designed to solve real estate-related issues. The application uses two specialized AI agents powered by Google's Gemini API:
@@ -97,3 +98,6 @@ npm run build
 ## License
 
 This project is licensed under the MIT License.
+=======
+# real-estate-agent
+>>>>>>> b2748a07d5d80b724af76dc5b203c73fba4f4acf
