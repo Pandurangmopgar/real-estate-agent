@@ -39,11 +39,38 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
   }, [conversation.messages.length]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [conversation.messages]);
+    // Only scroll to bottom when new messages are added
+    if (conversation.messages.length > 0) {
+      scrollToBottom();
+    }
+  }, [conversation.messages.length]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  };
+
+  // Process AI responses to be more concise and better formatted
+  const processAIResponse = (response: string, maxLength: number = 500): string => {
+    // If response is already short, return it as is
+    if (response.length <= maxLength) return response;
+    
+    // Split into paragraphs and process
+    const paragraphs = response.split('\n\n');
+    
+    // If there are multiple paragraphs, keep the first few and add a summary
+    if (paragraphs.length > 3) {
+      // Keep introduction and key points
+      const shortened = paragraphs.slice(0, 2).join('\n\n');
+      
+      // Add a brief summary if needed
+      if (shortened.length < maxLength) {
+        return shortened + '\n\nIn summary: ' + paragraphs[paragraphs.length - 1];
+      }
+      return shortened.substring(0, maxLength) + '...';
+    }
+    
+    // Just truncate with ellipsis if it's one long paragraph
+    return response.substring(0, maxLength) + '...';
   };
 
   const handleSendMessage = async (content: string, imageData?: string) => {
@@ -51,13 +78,17 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     
     setIsLoading(true);
     
+    // Determine which agent to use based on the active tab
+    const currentAgentType = activeTab;
+    console.log('Current active agent:', currentAgentType);
+    
     // Create user message
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
       content,
       timestamp: Date.now(),
-      agentType: activeTab,
+      agentType: currentAgentType, // Use the currently selected tab's agent
       hasImage: !!imageData,
       imageUrl: imageData ? `data:image/jpeg;base64,${imageData}` : undefined,
     };
@@ -98,39 +129,37 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     
     try {
       let response: string = '';
-      let agentType = activeTab;
+      let responseAgentType = currentAgentType; // Default to current tab
       
-      // If we have an image, use the troubleshooting agent
+      // If we have an image, force troubleshooting agent regardless of tab
       if (imageData) {
-        agentType = 'troubleshooting';
-        response = await analyzeImageAction(
-          imageData,
-          `Analyze this property image and identify any issues or problems. ${content ? `The user asks: ${content}` : 'What issues can you identify in this image?'}`
-        );
-      } else {
-        // Detect agent type if not provided
-        const detectedAgentType = await routeToAgentAction(content, false);
+        // Force switch to troubleshooting for image analysis
+        responseAgentType = 'troubleshooting';
         
-        if (detectedAgentType === 'clarification') {
-          response = "I'm not sure if your question is about property troubleshooting or tenancy rights. Could you please provide more details?";
-          agentType = 'troubleshooting'; // Default to troubleshooting for clarification messages
-        } else {
-          agentType = detectedAgentType as 'troubleshooting' | 'tenancy';
-          
-          console.log('Generating response for agent type:', agentType);
-          
-          // Generate response based on agent type
-          try {
-            if (agentType === 'troubleshooting') {
-              response = await generateTextResponseAction(content, 'troubleshooting');
-            } else {
-              response = await generateTextResponseAction(content, 'tenancy');
-            }
-            console.log('Response received:', response ? response.substring(0, 50) + '...' : 'No response');
-          } catch (error) {
-            console.error('Error generating response:', error);
-            response = 'Sorry, I encountered an error while processing your request. Please try again.';
+        // If we're not already on the troubleshooting tab, switch to it
+        if (activeTab !== 'troubleshooting') {
+          setActiveTab('troubleshooting');
+        }
+        
+        const rawResponse = await analyzeImageAction(
+          imageData,
+          `Analyze this property image and identify any issues or problems. Keep your response concise and focused on key issues. ${content ? `The user asks: ${content}` : 'What issues can you identify in this image?'}`
+        );
+        response = processAIResponse(rawResponse);
+      } else {
+        // For text queries, respect the selected tab and don't auto-switch
+        try {
+          if (currentAgentType === 'troubleshooting') {
+            const rawResponse = await generateTextResponseAction(content, 'troubleshooting');
+            response = processAIResponse(rawResponse);
+          } else if (currentAgentType === 'tenancy') {
+            const rawResponse = await generateTextResponseAction(content, 'tenancy');
+            response = processAIResponse(rawResponse);
           }
+          console.log('Response received from', responseAgentType, ':', response ? response.substring(0, 50) + '...' : 'No response');
+        } catch (error) {
+          console.error('Error generating response:', error);
+          response = 'Sorry, I encountered an error while processing your request. Please try again.';
         }
       }
       
@@ -143,7 +172,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         role: 'assistant',
         content: response,
         timestamp: Date.now(),
-        agentType,
+        agentType: responseAgentType, // Use the determined agent type
       };
       
       console.log('Adding assistant message to conversation:', assistantMessage);
@@ -177,11 +206,6 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
       
       // Update the UI
       onConversationUpdate();
-      
-      // Update active tab if agent type changed
-      if (agentType !== activeTab) {
-        setActiveTab(agentType);
-      }
     } catch (error) {
       console.error('Error generating response:', error);
       
@@ -223,7 +247,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -236,35 +260,35 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
           <TabsTrigger value="troubleshooting">Troubleshooting Agent</TabsTrigger>
           <TabsTrigger value="tenancy">Tenancy FAQ Agent</TabsTrigger>
         </TabsList>
-        
-        <div className="mt-4 flex-1 overflow-y-auto p-4">
-          <div>
-            {conversation.messages.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <h3 className="mb-2 text-xl font-semibold">
-                  Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
-                </h3>
-                <p className="mb-4 max-w-md text-muted-foreground">
-                  {activeTab === 'troubleshooting'
-                    ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
-                    : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
-                </p>
-              </div>
-            ) : (
-              conversation.messages.map((message, index) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  isLast={index === conversation.messages.length - 1}
-                />
-              ))
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
       </Tabs>
       
-      <div className="border-t p-4">
+      <div className="flex-1 overflow-y-auto p-4">
+        <div>
+          {conversation.messages.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <h3 className="mb-2 text-xl font-semibold">
+                Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
+              </h3>
+              <p className="mb-4 max-w-md text-muted-foreground">
+                {activeTab === 'troubleshooting'
+                  ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
+                  : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
+              </p>
+            </div>
+          ) : (
+            conversation.messages.map((message, index) => (
+              <ChatMessage
+                key={message.id}
+                message={message}
+                isLast={index === conversation.messages.length - 1}
+              />
+            ))
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+      
+      <div className="border-t p-4 sticky bottom-0 bg-background">
         <ChatInput
           onSendMessage={handleSendMessage}
           isDisabled={isLoading}
