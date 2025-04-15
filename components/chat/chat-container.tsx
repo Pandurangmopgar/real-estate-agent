@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessage } from '@/components/chat/chat-message';
+import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { addMessageToConversation } from '@/lib/redis';
 import { generateTextResponseAction, analyzeImageAction, routeToAgentAction } from '@/app/actions';
 
@@ -49,8 +51,8 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   };
 
-  // Process AI responses to be more concise and better formatted
-  const processAIResponse = (response: string, maxLength: number = 500): string => {
+  // Process AI responses to be more concise and better formatted with markdown-like syntax
+  const processAIResponse = (response: string, maxLength: number = 800): string => {
     // If response is already short, return it as is
     if (response.length <= maxLength) return response;
     
@@ -64,13 +66,29 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
       
       // Add a brief summary if needed
       if (shortened.length < maxLength) {
-        return shortened + '\n\nIn summary: ' + paragraphs[paragraphs.length - 1];
+        return shortened + '\n\n**In summary:** ' + paragraphs[paragraphs.length - 1];
       }
       return shortened.substring(0, maxLength) + '...';
     }
     
-    // Just truncate with ellipsis if it's one long paragraph
-    return response.substring(0, maxLength) + '...';
+    // Format headings and lists to improve readability
+    const enhanceFormatting = (text: string): string => {
+      // Convert plain text patterns to markdown-like syntax
+      return text
+        // Convert "Title:" to heading
+        .replace(/^([A-Z][^\n:]+):\s*$/gm, '# $1')
+        // Convert numbered items to proper list format
+        .replace(/^(\d+)\. (.+)$/gm, '$1. $2')
+        // Convert bullet points to list items
+        .replace(/^[•\-*]\s+(.+)$/gm, '- $1')
+        // Highlight important terms
+        .replace(/(Important|Note|Warning|Caution):/g, '**$1:**')
+        // Enhance key terms
+        .replace(/([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)+):/g, '**$1:**');
+    };
+    
+    // Just truncate with ellipsis if it's one long paragraph, but enhance formatting first
+    return enhanceFormatting(response.substring(0, maxLength)) + '...';
   };
 
   const handleSendMessage = async (content: string, imageData?: string) => {
@@ -264,26 +282,53 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
       
       <div className="flex-1 overflow-y-auto p-4">
         <div>
-          {conversation.messages.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <h3 className="mb-2 text-xl font-semibold">
-                Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
-              </h3>
-              <p className="mb-4 max-w-md text-muted-foreground">
-                {activeTab === 'troubleshooting'
-                  ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
-                  : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
-              </p>
-            </div>
-          ) : (
-            conversation.messages.map((message, index) => (
-              <ChatMessage
-                key={message.id}
-                message={message}
-                isLast={index === conversation.messages.length - 1}
-              />
-            ))
-          )}
+          <AnimatePresence mode="wait">
+            {conversation.messages.length === 0 ? (
+              <motion.div 
+                key="welcome"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex h-full flex-col items-center justify-center text-center"
+              >
+                <h3 className="mb-2 text-xl font-semibold">
+                  Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
+                </h3>
+                <p className="mb-4 max-w-md text-muted-foreground">
+                  {activeTab === 'troubleshooting'
+                    ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
+                    : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
+                </p>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="messages"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="w-full"
+              >
+                {conversation.messages.map((message, index) => (
+                  <ChatMessage
+                    key={message.id}
+                    message={message}
+                    isLast={index === conversation.messages.length - 1}
+                  />
+                ))}
+                
+                {/* Loading animation when waiting for response */}
+                {isLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4"
+                  >
+                    <LoadingIndicator agentType={activeTab} />
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div ref={messagesEndRef} />
         </div>
       </div>
