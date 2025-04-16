@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-// Removed framer-motion import
+import { motion } from 'framer-motion';
 import { ChatContainer } from '@/components/chat/chat-container';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Conversation, createConversation, getConversation } from '@/lib/redis';
@@ -96,25 +96,37 @@ export default function ChatPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors">
-      <div className="container mx-auto flex h-screen flex-col py-4">
-      <div className="mb-3 flex items-center justify-between border-b pb-3">
-        <h1 className="text-2xl font-bold">Multi-Agent Real Estate Assistant</h1>
+      {/* Background elements */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-background to-background dark:from-primary/10 dark:via-background dark:to-background"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/10 dark:bg-primary/15 blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-primary/15 dark:bg-primary/20 blur-3xl"></div>
+      </div>
+      
+      <div className="container mx-auto flex h-screen flex-col py-4 relative z-10">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold font-heading bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">Multi-Agent Real Estate Assistant</h1>
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <button
+          <motion.button
             onClick={startNewConversation}
-            className="rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+            className="relative rounded-lg border border-primary/20 bg-background/80 backdrop-blur-sm px-4 py-2 text-sm font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:border-primary/40 hover:bg-primary/5 dark:border-primary/30 dark:hover:border-primary/50 dark:hover:bg-primary/10 flex items-center gap-2"
             disabled={isLoading}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
           >
-            New Conversation
-          </button>
+            <span>New Conversation</span>
+          </motion.button>
         </div>
       </div>
       
-      <div className="flex-1 overflow-hidden rounded-lg border">
+      <div className="flex-1 overflow-hidden rounded-xl border border-primary/10 dark:border-primary/20 shadow-lg backdrop-blur-sm bg-card/30 dark:bg-card/20 h-[calc(100%-2rem)]">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="relative">
+              <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+              <div className="absolute inset-0 h-10 w-10 rounded-full border-2 border-primary/10 border-b-transparent animate-spin animation-delay-500" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+            </div>
           </div>
         ) : conversation ? (
           <ChatContainer 

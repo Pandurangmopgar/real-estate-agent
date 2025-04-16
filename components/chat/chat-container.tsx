@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Wrench, HomeIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChatInput } from '@/components/chat/chat-input';
@@ -45,15 +46,43 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
   // Render welcome message with modern typography
   const renderWelcomeMessage = () => {
     return (
-      <div className="flex flex-col items-center justify-center text-center mb-10">
-        <h2 className="text-2xl font-semibold mb-4 font-heading">
+      <div className="flex flex-col items-center justify-center text-center py-12 max-w-2xl mx-auto h-full">
+        <motion.div 
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6 p-4 rounded-full bg-primary/10 dark:bg-primary/20 text-primary"
+        >
+          {activeTab === 'troubleshooting' ? (
+            <Wrench className="h-10 w-10" />
+          ) : (
+            <HomeIcon className="h-10 w-10" />
+          )}
+        </motion.div>
+        <motion.h2 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-2xl md:text-3xl font-semibold mb-4 font-heading bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent pb-1"
+        >
           Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
-        </h2>
-        <p className="text-muted-foreground max-w-xl text-[15px] leading-relaxed font-sans">
+        </motion.h2>
+        <motion.p 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-muted-foreground max-w-xl text-[15px] leading-relaxed font-sans"
+        >
           {activeTab === 'troubleshooting'
             ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
             : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
-        </p>
+        </motion.p>
+        <motion.div 
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="w-16 h-1 bg-primary/20 dark:bg-primary/30 rounded-full mt-8"
+        />
       </div>
     );
   };
@@ -302,24 +331,35 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         }}
         className="w-full font-sans"
       >
-        <TabsList className="grid w-full grid-cols-2 font-medium">
-          <TabsTrigger value="troubleshooting">Troubleshooting Agent</TabsTrigger>
-          <TabsTrigger value="tenancy">Tenancy FAQ Agent</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 font-medium p-1 bg-background/50 dark:bg-background/30 backdrop-blur-sm rounded-lg shadow-sm">
+          <TabsTrigger 
+            value="troubleshooting"
+            className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary dark:data-[state=active]:bg-primary/20 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-md transition-all duration-200 border-b-2 border-transparent"
+          >
+            <Wrench className="h-4 w-4 mr-2" />
+            Troubleshooting Agent
+          </TabsTrigger>
+          <TabsTrigger 
+            value="tenancy"
+            className="data-[state=active]:bg-primary/10 data-[state=active]:text-primary dark:data-[state=active]:bg-primary/20 data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-md transition-all duration-200 border-b-2 border-transparent"
+          >
+            <HomeIcon className="h-4 w-4 mr-2" />
+            Tenancy FAQ Agent
+          </TabsTrigger>
         </TabsList>
       </Tabs>
       
-      {/* Tabs content */}
-      <div className="flex-1 overflow-y-auto p-4 pb-6">
-        <div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="h-full">
           <AnimatePresence mode="wait">
             {filteredMessages.length === 0 ? (
               <motion.div 
                 key="welcome"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex h-full flex-col items-center justify-center text-center"
+                transition={{ duration: 0.3 }}
+                className="flex h-full flex-col items-center justify-center"
               >
                 {renderWelcomeMessage()}
               </motion.div>
@@ -328,7 +368,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                 key="messages"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="w-full"
+                className="w-full p-4"
               >
                 {filteredMessages.map((message) => (
                   <ChatMessage
@@ -354,7 +394,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         </div>
       </div>
       
-      <div className="border-t p-2 sticky bottom-0 bg-background shadow-md z-10 dark:bg-background/95 dark:backdrop-blur">
+      <div className="border-t p-3 sticky bottom-0 bg-background/95 shadow-md z-10 dark:bg-background/90 dark:backdrop-blur-sm">
         <ChatInput
           onSendMessage={handleSendMessage}
           isDisabled={isLoading}

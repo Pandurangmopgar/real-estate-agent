@@ -75,16 +75,16 @@ export function ChatInput({
 
   return (
     <div className="relative w-full">
-      <div className="flex flex-col rounded-lg border bg-background shadow-sm hover:shadow transition-shadow duration-200 dark:border-muted-foreground/20 dark:bg-background/80 dark:backdrop-blur">
+      <div className="flex flex-col rounded-xl border border-primary/10 dark:border-primary/20 bg-card/30 dark:bg-card/20 shadow-md hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
         {/* Image preview area - only shown when an image is selected */}
         {agentType === 'troubleshooting' && imagePreview && (
-          <div className="relative p-3 border-b dark:border-muted-foreground/20">
+          <div className="relative p-4 border-b border-primary/10 dark:border-primary/20">
             <Image 
               src={imagePreview} 
               alt="Preview" 
               width={400}
               height={300}
-              className="mx-auto max-h-[200px] rounded-md object-contain" 
+              className="mx-auto max-h-[200px] rounded-lg object-contain shadow-sm" 
               style={{ width: 'auto', height: 'auto' }}
             />
             <button
@@ -93,14 +93,14 @@ export function ChatInput({
                 e.stopPropagation();
                 clearImage();
               }}
-              className="absolute right-3 top-3 rounded-full bg-background p-1 text-foreground shadow-md dark:bg-background/90 dark:text-foreground/90"
+              className="absolute right-3 top-3 rounded-full bg-background/80 backdrop-blur-sm p-1.5 text-foreground shadow-md dark:bg-background/50 dark:text-foreground/90 border border-primary/10 dark:border-primary/20 hover:bg-background/90 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
         )}
         
-        <div className="flex items-end gap-2 p-2">
+        <div className="flex items-end gap-3 p-3">
           <textarea
             ref={inputRef}
             value={message}
@@ -114,7 +114,7 @@ export function ChatInput({
           {agentType === 'troubleshooting' && !imagePreview && (
             <div 
               {...getRootProps()}
-              className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary text-primary-foreground' : 'bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30'} transition-all cursor-pointer shadow-sm hover:shadow`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary text-primary-foreground' : 'bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30'} transition-all cursor-pointer shadow-sm hover:shadow border border-primary/10 dark:border-primary/20`}
             >
               <input {...getInputProps()} />
               <ImagePlus className="h-5 w-5 text-primary dark:text-primary" />
@@ -122,10 +122,11 @@ export function ChatInput({
           )}
           
           <motion.button
-            whileTap={{ scale: 0.9 }}
+            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.05 }}
             onClick={handleSendMessage}
             disabled={isDisabled || (message.trim() === '' && !imageFile)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-all duration-300 shadow-sm hover:shadow disabled:hover:scale-100"
           >
             <Send className="h-5 w-5" />
           </motion.button>
@@ -133,8 +134,13 @@ export function ChatInput({
       </div>
 
       {isAgentTyping && (
-        <div className="mt-2 text-sm text-muted-foreground">
-          Agent is typing...
+        <div className="mt-3 text-sm text-primary/70 font-medium flex items-center gap-2">
+          <div className="flex gap-1">
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          </div>
+          <span>Agent is thinking...</span>
         </div>
       )}
     </div>
