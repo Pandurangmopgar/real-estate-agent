@@ -38,16 +38,16 @@ export function ChatMessage({ message }: ChatMessageProps) {
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-3 shadow-sm ${
+        className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-3 shadow-sm transition-colors ${
           isUser
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-muted text-muted-foreground'
+            ? 'bg-primary text-primary-foreground dark:bg-primary/90'
+            : 'bg-muted text-muted-foreground dark:bg-muted/90'
         }`}
       >
         <div className="flex items-center gap-2">
           <div
             className={`flex h-7 w-7 items-center justify-center rounded-full ${
-              isUser ? 'bg-primary-foreground text-primary' : 'bg-background text-foreground'
+              isUser ? 'bg-primary-foreground text-primary dark:bg-primary-foreground/90' : 'bg-background text-foreground dark:bg-background/90'
             }`}
           >
             {getAgentIcon()}
@@ -64,13 +64,13 @@ export function ChatMessage({ message }: ChatMessageProps) {
           </div>
         </div>
         
-        <div className="prose prose-sm dark:prose-invert max-w-full leading-snug">
+        <div className="prose prose-sm dark:prose-invert max-w-full leading-snug transition-colors">
           {message.hasImage && message.imageUrl && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="mb-3 overflow-hidden rounded-md"
+              className="mb-3 overflow-hidden rounded-md transition-all"
             >
               <Image 
                 src={message.imageUrl} 

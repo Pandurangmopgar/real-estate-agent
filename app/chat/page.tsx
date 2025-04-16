@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // Removed framer-motion import
 import { ChatContainer } from '@/components/chat/chat-container';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { Conversation, createConversation, getConversation } from '@/lib/redis';
 
 export default function ChatPage() {
@@ -94,16 +95,20 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="container mx-auto flex h-[calc(100vh-4rem)] flex-col py-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors">
+      <div className="container mx-auto flex h-screen flex-col py-4">
+      <div className="mb-3 flex items-center justify-between border-b pb-3">
         <h1 className="text-2xl font-bold">Multi-Agent Real Estate Assistant</h1>
-        <button
-          onClick={startNewConversation}
-          className="rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-          disabled={isLoading}
-        >
-          New Conversation
-        </button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <button
+            onClick={startNewConversation}
+            className="rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+            disabled={isLoading}
+          >
+            New Conversation
+          </button>
+        </div>
       </div>
       
       <div className="flex-1 overflow-hidden rounded-lg border">
@@ -122,6 +127,7 @@ export default function ChatPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

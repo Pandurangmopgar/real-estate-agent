@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { MessageCircle, Info, Wrench, HomeIcon } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors">
       {/* Hero Section */}
-      <section className="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-background to-primary/5 px-4 py-24 text-center">
+      <section className="relative flex min-h-[100vh] flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-background to-primary/5 dark:from-background dark:to-primary/10 px-4 py-24 text-center">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle />
+        </div>
         <div className="container max-w-4xl">
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
             <span className="block text-primary">Multi-Agent</span>
@@ -42,7 +46,7 @@ export default function HomePage() {
       </section>
       
       {/* Features Section */}
-      <section className="py-20">
+      <section className="py-20 bg-background dark:bg-background transition-colors">
         <div className="container">
           <h2 className="mb-12 text-center text-3xl font-bold tracking-tight sm:text-4xl">
             Specialized Agents for Your Real Estate Needs
@@ -109,7 +113,7 @@ export default function HomePage() {
       </section>
       
       {/* CTA Section */}
-      <section className="bg-primary py-16 text-primary-foreground">
+      <section className="bg-primary py-16 text-primary-foreground dark:bg-primary/90 transition-colors">
         <div className="container text-center">
           <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl">
             Ready to solve your real estate problems?
@@ -130,7 +134,7 @@ export default function HomePage() {
       </section>
       
       {/* Footer */}
-      <footer className="border-t py-8">
+      <footer className="border-t py-8 bg-background dark:bg-background transition-colors">
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-center text-sm text-muted-foreground">
             © 2025 Multi-Agent Real Estate Assistant. All rights reserved.

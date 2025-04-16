@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessage } from '@/components/chat/chat-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
+import { Upload } from 'lucide-react';
 import { addMessageToConversation } from '@/lib/redis';
 import { generateTextResponseAction, analyzeImageAction } from '@/app/actions';
 
@@ -33,6 +34,13 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
   const [activeTab, setActiveTab] = useState<'troubleshooting' | 'tenancy'>('troubleshooting');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Filter messages based on active agent
+  const filteredMessages = useMemo(() => {
+    return conversation.messages.filter(message => 
+      message.agentType === activeTab
+    );
+  }, [conversation.messages, activeTab]);
 
   useEffect(() => {
     console.log('ChatContainer rendered with conversation:', conversation.id);
@@ -271,7 +279,11 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     <div className="flex h-full flex-col">
       <Tabs 
         value={activeTab} 
-        onValueChange={(value) => setActiveTab(value as 'troubleshooting' | 'tenancy')}
+        onValueChange={(value) => {
+          // Clear loading state when switching tabs
+          setIsLoading(false);
+          setActiveTab(value as 'troubleshooting' | 'tenancy');
+        }}
         className="w-full"
       >
         <TabsList className="grid w-full grid-cols-2">
@@ -280,10 +292,11 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         </TabsList>
       </Tabs>
       
+      {/* Tabs content */}
       <div className="flex-1 overflow-y-auto p-2 pb-4">
         <div>
           <AnimatePresence mode="wait">
-            {conversation.messages.length === 0 ? (
+            {filteredMessages.length === 0 ? (
               <motion.div 
                 key="welcome"
                 initial={{ opacity: 0, y: 20 }}
@@ -308,7 +321,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                 animate={{ opacity: 1 }}
                 className="w-full"
               >
-                {conversation.messages.map((message) => (
+                {filteredMessages.map((message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
@@ -332,7 +345,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         </div>
       </div>
       
-      <div className="border-t p-2 sticky bottom-0 bg-background shadow-md z-10">
+      <div className="border-t p-2 sticky bottom-0 bg-background shadow-md z-10 dark:bg-background/95 dark:backdrop-blur">
         <ChatInput
           onSendMessage={handleSendMessage}
           isDisabled={isLoading}

@@ -77,8 +77,8 @@ export function ChatInput({
     <div className="relative w-full">
       {agentType === 'troubleshooting' && (
         <div 
-          className={`mb-2 rounded-lg border-2 border-dashed p-4 transition-colors ${
-            isDragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/20'
+          className={`mb-4 mt-2 rounded-lg border-2 border-dashed p-5 transition-colors ${
+            isDragActive ? 'border-primary bg-primary/10 dark:bg-primary/20' : 'border-primary/30 dark:border-primary/40'
           }`}
           {...getRootProps()}
         >
@@ -99,26 +99,29 @@ export function ChatInput({
                   e.stopPropagation();
                   clearImage();
                 }}
-                className="absolute right-2 top-2 rounded-full bg-background p-1 text-foreground shadow-md"
+                className="absolute right-2 top-2 rounded-full bg-background p-1 text-foreground shadow-md dark:bg-background/90 dark:text-foreground/90"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-4 text-center">
-              <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20 mb-3">
+                <Upload className="h-6 w-6" />
+              </div>
+              <h3 className="text-base font-medium mb-1">Upload a property image</h3>
+              <p className="text-sm text-muted-foreground mb-1">
                 Drag & drop an image here, or click to select
               </p>
-              <p className="mt-1 text-xs text-muted-foreground/70">
-                Supported formats: JPEG, PNG, WebP
+              <p className="text-xs text-muted-foreground/70">
+                Get AI analysis of property issues • JPEG, PNG, WebP formats
               </p>
             </div>
           )}
         </div>
       )}
 
-      <div className="flex items-end gap-2 rounded-lg border bg-background p-2 shadow-sm hover:shadow transition-shadow duration-200">
+      <div className="flex items-end gap-2 rounded-lg border bg-background p-2 shadow-sm hover:shadow transition-shadow duration-200 dark:border-muted-foreground/20 dark:bg-background/80 dark:backdrop-blur">
         <textarea
           ref={inputRef}
           value={message}
