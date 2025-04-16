@@ -114,14 +114,14 @@ export function ChatInput({
         </div>
       )}
 
-      <div className="flex items-end gap-2 rounded-lg border bg-background p-2">
+      <div className="flex items-end gap-2 rounded-lg border bg-background p-2 shadow-sm hover:shadow transition-shadow duration-200">
         <textarea
           ref={inputRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={`Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
-          className="flex-1 resize-none bg-transparent p-2 text-sm focus:outline-none"
+          className="flex-1 resize-none bg-transparent p-2 text-sm focus:outline-none min-h-[40px] max-h-[120px]"
           rows={1}
           disabled={isDisabled}
         />
@@ -129,7 +129,7 @@ export function ChatInput({
           whileTap={{ scale: 0.9 }}
           onClick={handleSendMessage}
           disabled={isDisabled || (message.trim() === '' && !imageFile)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors"
         >
           <Send className="h-5 w-5" />
         </motion.button>

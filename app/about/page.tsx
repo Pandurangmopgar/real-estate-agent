@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 // Removed framer-motion import
-import { ArrowLeft, Github, Cpu, Database, Code } from 'lucide-react';
+import { ArrowLeft, Cpu, Database, Code } from 'lucide-react';
 
 export default function AboutPage() {
   return (

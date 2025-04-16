@@ -1,5 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+// Helper functions for the application
 
 export function formatDate(date: Date | number): string {
   const d = new Date(date);

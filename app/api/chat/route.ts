@@ -5,7 +5,7 @@ import { addMessageToConversation, getConversation } from '@/lib/redis';
 // Enable more detailed logging
 const DEBUG = true;
 
-function log(...args: any[]) {
+function log(...args: unknown[]) {
   if (DEBUG) {
     console.log('[API]', ...args);
   }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     log('Selected agent type:', agentType);
     
     // Add user message to conversation
-    const userMessage = await addMessageToConversation(conversationId, {
+    await addMessageToConversation(conversationId, {
       role: 'user',
       content: message.content,
       agentType: agentType === 'clarification' ? 'troubleshooting' : agentType,
@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
       agentType: agentType === 'clarification' ? 'troubleshooting' : agentType,
     });
     
-    // Return the updated conversation
-    const updatedConversation = await getConversation(conversationId);
+    // We don't need to fetch the updated conversation here since we're just returning the message
+    // const updatedConversation = await getConversation(conversationId);
     
     log('Returning assistant message:', { id: assistantMessage.id, content: assistantMessage.content?.substring(0, 50) + '...' });
     return NextResponse.json({ message: assistantMessage });

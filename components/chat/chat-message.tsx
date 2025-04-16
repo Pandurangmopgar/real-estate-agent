@@ -7,10 +7,9 @@ import { formatMessageContent } from '@/lib/message-formatter';
 
 interface ChatMessageProps {
   message: Message;
-  isLast: boolean;
 }
 
-export function ChatMessage({ message, isLast }: ChatMessageProps) {
+export function ChatMessage({ message }: ChatMessageProps) {
   const isUser = message.role === 'user';
   
   const getAgentIcon = () => {
@@ -34,11 +33,11 @@ export function ChatMessage({ message, isLast }: ChatMessageProps) {
       initial="hidden"
       animate="visible"
       variants={messageVariants}
-      className={`flex w-full items-start gap-4 mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}
+      className={`flex w-full items-start gap-3 mb-3 ${isUser ? 'justify-end' : 'justify-start'}`}
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className={`flex max-w-[80%] flex-col gap-2 rounded-lg p-4 shadow-sm ${
+        className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-3 shadow-sm ${
           isUser
             ? 'bg-primary text-primary-foreground'
             : 'bg-muted text-muted-foreground'
@@ -46,7 +45,7 @@ export function ChatMessage({ message, isLast }: ChatMessageProps) {
       >
         <div className="flex items-center gap-2">
           <div
-            className={`flex h-8 w-8 items-center justify-center rounded-full ${
+            className={`flex h-7 w-7 items-center justify-center rounded-full ${
               isUser ? 'bg-primary-foreground text-primary' : 'bg-background text-foreground'
             }`}
           >
@@ -64,7 +63,7 @@ export function ChatMessage({ message, isLast }: ChatMessageProps) {
           </div>
         </div>
         
-        <div className="prose prose-sm dark:prose-invert max-w-full">
+        <div className="prose prose-sm dark:prose-invert max-w-full leading-snug">
           {message.hasImage && message.imageUrl && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}

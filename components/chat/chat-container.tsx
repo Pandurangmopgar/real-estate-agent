@@ -5,7 +5,7 @@ import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessage } from '@/components/chat/chat-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { addMessageToConversation } from '@/lib/redis';
-import { generateTextResponseAction, analyzeImageAction, routeToAgentAction } from '@/app/actions';
+import { generateTextResponseAction, analyzeImageAction } from '@/app/actions';
 
 interface Message {
   id: string;
@@ -38,7 +38,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     console.log('ChatContainer rendered with conversation:', conversation.id);
     console.log('Current messages count:', conversation.messages.length);
     console.log('Messages:', conversation.messages);
-  }, [conversation.messages.length]);
+  }, [conversation.id, conversation.messages, conversation.messages.length]);
 
   useEffect(() => {
     // Only scroll to bottom when new messages are added
@@ -280,7 +280,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         </TabsList>
       </Tabs>
       
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-2 pb-4">
         <div>
           <AnimatePresence mode="wait">
             {conversation.messages.length === 0 ? (
@@ -312,7 +312,6 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                   <ChatMessage
                     key={message.id}
                     message={message}
-                    isLast={index === conversation.messages.length - 1}
                   />
                 ))}
                 
@@ -333,7 +332,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         </div>
       </div>
       
-      <div className="border-t p-4 sticky bottom-0 bg-background">
+      <div className="border-t p-2 sticky bottom-0 bg-background shadow-md z-10">
         <ChatInput
           onSendMessage={handleSendMessage}
           isDisabled={isLoading}

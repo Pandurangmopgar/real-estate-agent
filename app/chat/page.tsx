@@ -94,8 +94,8 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="container mx-auto flex h-[calc(100vh-4rem)] flex-col py-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="container mx-auto flex h-[calc(100vh-4rem)] flex-col py-4">
+      <div className="mb-3 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Multi-Agent Real Estate Assistant</h1>
         <button
           onClick={startNewConversation}

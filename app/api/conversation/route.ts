@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createConversation, getConversation, getRecentConversations } from '@/lib/redis';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Create a new conversation
     const conversation = await createConversation();
