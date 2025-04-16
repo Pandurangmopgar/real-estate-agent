@@ -75,71 +75,61 @@ export function ChatInput({
 
   return (
     <div className="relative w-full">
-      {agentType === 'troubleshooting' && (
-        <div 
-          className={`mb-4 mt-2 rounded-lg border-2 border-dashed p-5 transition-colors ${
-            isDragActive ? 'border-primary bg-primary/10 dark:bg-primary/20' : 'border-primary/30 dark:border-primary/40'
-          }`}
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          {imagePreview ? (
-            <div className="relative">
-              <Image 
-                src={imagePreview} 
-                alt="Preview" 
-                width={400}
-                height={300}
-                className="mx-auto max-h-[200px] rounded-md object-contain" 
-                style={{ width: 'auto', height: 'auto' }}
-              />
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  clearImage();
-                }}
-                className="absolute right-2 top-2 rounded-full bg-background p-1 text-foreground shadow-md dark:bg-background/90 dark:text-foreground/90"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-6 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary dark:bg-primary/20 mb-3">
-                <Upload className="h-6 w-6" />
-              </div>
-              <h3 className="text-base font-medium mb-1">Upload a property image</h3>
-              <p className="text-sm text-muted-foreground mb-1">
-                Drag & drop an image here, or click to select
-              </p>
-              <p className="text-xs text-muted-foreground/70">
-                Get AI analysis of property issues • JPEG, PNG, WebP formats
-              </p>
+      <div className="flex flex-col rounded-lg border bg-background shadow-sm hover:shadow transition-shadow duration-200 dark:border-muted-foreground/20 dark:bg-background/80 dark:backdrop-blur">
+        {/* Image preview area - only shown when an image is selected */}
+        {agentType === 'troubleshooting' && imagePreview && (
+          <div className="relative p-3 border-b dark:border-muted-foreground/20">
+            <Image 
+              src={imagePreview} 
+              alt="Preview" 
+              width={400}
+              height={300}
+              className="mx-auto max-h-[200px] rounded-md object-contain" 
+              style={{ width: 'auto', height: 'auto' }}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                clearImage();
+              }}
+              className="absolute right-3 top-3 rounded-full bg-background p-1 text-foreground shadow-md dark:bg-background/90 dark:text-foreground/90"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+        
+        <div className="flex items-end gap-2 p-2">
+          <textarea
+            ref={inputRef}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={`Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
+            className="flex-1 resize-none bg-transparent p-2 text-sm focus:outline-none min-h-[40px] max-h-[120px]"
+            rows={1}
+            disabled={isDisabled}
+          />
+          {agentType === 'troubleshooting' && !imagePreview && (
+            <div 
+              {...getRootProps()}
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary/80' : 'bg-muted hover:bg-muted/80'} transition-colors cursor-pointer`}
+            >
+              <input {...getInputProps()} />
+              <Upload className="h-5 w-5 text-muted-foreground" />
             </div>
           )}
+          
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={handleSendMessage}
+            disabled={isDisabled || (message.trim() === '' && !imageFile)}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors"
+          >
+            <Send className="h-5 w-5" />
+          </motion.button>
         </div>
-      )}
-
-      <div className="flex items-end gap-2 rounded-lg border bg-background p-2 shadow-sm hover:shadow transition-shadow duration-200 dark:border-muted-foreground/20 dark:bg-background/80 dark:backdrop-blur">
-        <textarea
-          ref={inputRef}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={`Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
-          className="flex-1 resize-none bg-transparent p-2 text-sm focus:outline-none min-h-[40px] max-h-[120px]"
-          rows={1}
-          disabled={isDisabled}
-        />
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={handleSendMessage}
-          disabled={isDisabled || (message.trim() === '' && !imageFile)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors"
-        >
-          <Send className="h-5 w-5" />
-        </motion.button>
       </div>
 
       {isAgentTyping && (
