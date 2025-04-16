@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Upload, X } from 'lucide-react';
+import { Send, ImagePlus, X, Camera, Image as ImageIcon } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { fileToBase64 } from '@/lib/helpers';
@@ -114,10 +114,10 @@ export function ChatInput({
           {agentType === 'troubleshooting' && !imagePreview && (
             <div 
               {...getRootProps()}
-              className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary/80' : 'bg-muted hover:bg-muted/80'} transition-colors cursor-pointer`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary text-primary-foreground' : 'bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30'} transition-all cursor-pointer shadow-sm hover:shadow`}
             >
               <input {...getInputProps()} />
-              <Upload className="h-5 w-5 text-muted-foreground" />
+              <ImagePlus className="h-5 w-5 text-primary dark:text-primary" />
             </div>
           )}
           
