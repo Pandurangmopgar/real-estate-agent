@@ -42,6 +42,22 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     );
   }, [conversation.messages, activeTab]);
 
+  // Render welcome message with modern typography
+  const renderWelcomeMessage = () => {
+    return (
+      <div className="flex flex-col items-center justify-center text-center mb-10">
+        <h2 className="text-2xl font-semibold mb-4 font-heading">
+          Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
+        </h2>
+        <p className="text-muted-foreground max-w-xl text-[15px] leading-relaxed font-sans">
+          {activeTab === 'troubleshooting'
+            ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
+            : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
+        </p>
+      </div>
+    );
+  };
+
   useEffect(() => {
     console.log('ChatContainer rendered with conversation:', conversation.id);
     console.log('Current messages count:', conversation.messages.length);
@@ -284,16 +300,16 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
           setIsLoading(false);
           setActiveTab(value as 'troubleshooting' | 'tenancy');
         }}
-        className="w-full"
+        className="w-full font-sans"
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 font-medium">
           <TabsTrigger value="troubleshooting">Troubleshooting Agent</TabsTrigger>
           <TabsTrigger value="tenancy">Tenancy FAQ Agent</TabsTrigger>
         </TabsList>
       </Tabs>
       
       {/* Tabs content */}
-      <div className="flex-1 overflow-y-auto p-2 pb-4">
+      <div className="flex-1 overflow-y-auto p-4 pb-6">
         <div>
           <AnimatePresence mode="wait">
             {filteredMessages.length === 0 ? (
@@ -305,14 +321,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                 transition={{ duration: 0.5 }}
                 className="flex h-full flex-col items-center justify-center text-center"
               >
-                <h3 className="mb-2 text-xl font-semibold">
-                  Welcome to the {activeTab === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent
-                </h3>
-                <p className="mb-4 max-w-md text-muted-foreground">
-                  {activeTab === 'troubleshooting'
-                    ? 'Upload an image of your property issue and ask questions about repairs, maintenance, or troubleshooting.'
-                    : 'Ask questions about rental laws, agreements, tenant rights, or landlord responsibilities.'}
-                </p>
+                {renderWelcomeMessage()}
               </motion.div>
             ) : (
               <motion.div

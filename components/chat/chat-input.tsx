@@ -107,7 +107,7 @@ export function ChatInput({
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
-            className="flex-1 resize-none bg-transparent p-2 text-sm focus:outline-none min-h-[40px] max-h-[120px]"
+            className="flex-1 resize-none bg-transparent p-2 text-[15px] font-sans focus:outline-none min-h-[44px] max-h-[120px] leading-relaxed"
             rows={1}
             disabled={isDisabled}
           />

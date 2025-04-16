@@ -38,33 +38,33 @@ export function ChatMessage({ message }: ChatMessageProps) {
     >
       <motion.div
         whileHover={{ scale: 1.01 }}
-        className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-3 shadow-sm transition-colors ${
+        className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-4 shadow-sm transition-colors ${
           isUser
             ? 'bg-primary text-primary-foreground dark:bg-primary/90'
-            : 'bg-muted text-muted-foreground dark:bg-muted/90'
+            : 'bg-card/60 text-card-foreground dark:bg-card/40 dark:text-card-foreground'
         }`}
       >
         <div className="flex items-center gap-2">
           <div
-            className={`flex h-7 w-7 items-center justify-center rounded-full ${
-              isUser ? 'bg-primary-foreground text-primary dark:bg-primary-foreground/90' : 'bg-background text-foreground dark:bg-background/90'
+            className={`flex h-8 w-8 items-center justify-center rounded-full ${
+              isUser ? 'bg-primary-foreground text-primary dark:bg-primary-foreground/90' : 'bg-primary/10 text-primary dark:bg-primary/20'
             }`}
           >
             {getAgentIcon()}
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium">
+            <span className="text-sm font-semibold font-sans">
               {isUser ? 'You' : message.agentType === 'troubleshooting' 
                 ? 'Troubleshooting Agent' 
                 : 'Tenancy FAQ Agent'}
             </span>
-            <span className="text-xs opacity-70">
+            <span className="text-xs opacity-70 font-sans">
               {formatDate(message.timestamp)}
             </span>
           </div>
         </div>
         
-        <div className="prose prose-sm dark:prose-invert max-w-full leading-snug transition-colors">
+        <div className="prose prose-sm dark:prose-invert max-w-full leading-relaxed transition-colors font-sans">
           {message.hasImage && message.imageUrl && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
@@ -83,7 +83,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
             </motion.div>
           )}
           <div 
-            className="message-content" 
+            className="message-content font-sans text-[15px] leading-relaxed" 
             dangerouslySetInnerHTML={{ __html: formatMessageContent(message.content) }}
           />
         </div>
