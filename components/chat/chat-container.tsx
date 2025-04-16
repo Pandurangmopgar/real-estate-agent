@@ -308,7 +308,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                 animate={{ opacity: 1 }}
                 className="w-full"
               >
-                {conversation.messages.map((message, index) => (
+                {conversation.messages.map((message) => (
                   <ChatMessage
                     key={message.id}
                     message={message}

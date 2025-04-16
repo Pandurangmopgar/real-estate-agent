@@ -6,7 +6,7 @@ export function formatMessageContent(content: string): string {
   if (!content) return '';
   
   // Process the content with HTML for styling
-  let formattedContent = content
+  const formattedContent = content
     // Replace headings (# Heading)
     .replace(/^# (.+)$/gm, '<h1 class="text-xl font-bold my-2">$1</h1>')
     .replace(/^## (.+)$/gm, '<h2 class="text-lg font-bold my-2">$1</h2>')

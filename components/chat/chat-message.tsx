@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { User, HomeIcon, Wrench } from 'lucide-react';
+import Image from 'next/image';
 import { formatDate } from '@/lib/helpers';
 import { Message } from '@/lib/redis';
 import { formatMessageContent } from '@/lib/message-formatter';
@@ -71,10 +72,13 @@ export function ChatMessage({ message }: ChatMessageProps) {
               transition={{ delay: 0.2 }}
               className="mb-3 overflow-hidden rounded-md"
             >
-              <img 
+              <Image 
                 src={message.imageUrl} 
                 alt="Uploaded property image" 
-                className="h-auto max-h-[300px] w-auto object-contain rounded-md"
+                width={500}
+                height={400}
+                className="max-h-[300px] object-contain rounded-md"
+                style={{ width: 'auto', height: 'auto' }}
               />
             </motion.div>
           )}

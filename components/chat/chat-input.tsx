@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Upload, X } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
+import Image from 'next/image';
 import { fileToBase64 } from '@/lib/helpers';
 
 interface ChatInputProps {
@@ -84,10 +85,13 @@ export function ChatInput({
           <input {...getInputProps()} />
           {imagePreview ? (
             <div className="relative">
-              <img 
+              <Image 
                 src={imagePreview} 
                 alt="Preview" 
-                className="mx-auto h-auto max-h-[200px] w-auto rounded-md object-contain" 
+                width={400}
+                height={300}
+                className="mx-auto max-h-[200px] rounded-md object-contain" 
+                style={{ width: 'auto', height: 'auto' }}
               />
               <button
                 type="button"
