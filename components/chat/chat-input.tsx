@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Send, ImagePlus, X, Camera, Image as ImageIcon } from 'lucide-react';
+import { Send, ImagePlus, X } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { fileToBase64 } from '@/lib/helpers';

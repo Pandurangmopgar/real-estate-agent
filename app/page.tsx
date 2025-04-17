@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import { MessageCircle, Info, Wrench, HomeIcon, Building2, Shield, Star, ArrowRight } from "lucide-react";
+import { MessageCircle, Info, Wrench, Building2, Shield, Star, ArrowRight } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function HomePage() {

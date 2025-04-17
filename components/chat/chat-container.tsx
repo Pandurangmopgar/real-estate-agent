@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Wrench, HomeIcon, X, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChatInput } from '@/components/chat/chat-input';
 import { ChatMessage } from '@/components/chat/chat-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
-import { Upload } from 'lucide-react';
 import { addMessageToConversation } from '@/lib/redis';
 import { generateTextResponseAction, analyzeImageAction } from '@/app/actions';
 
@@ -34,7 +32,7 @@ interface ChatContainerProps {
 export function ChatContainer({ conversation, onConversationUpdate }: ChatContainerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false); // Start with tutorial hidden
-  const [showTutorialButton, setShowTutorialButton] = useState(true); // Show the tutorial button
+  const showTutorialButton = true; // Always show the tutorial button
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // We no longer filter messages by agent type - all messages are shown in a single thread
