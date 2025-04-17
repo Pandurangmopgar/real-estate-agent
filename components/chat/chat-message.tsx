@@ -41,7 +41,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         className={`flex max-w-[85%] flex-col gap-2 rounded-lg p-4 shadow-sm transition-colors ${
           isUser
             ? 'bg-primary text-primary-foreground dark:bg-primary/90'
-            : 'bg-card/60 text-card-foreground dark:bg-card/40 dark:text-card-foreground'
+            : 'bg-slate-100 text-slate-900 dark:bg-slate-700 dark:text-slate-50'
         }`}
       >
         <div className="flex items-center gap-2">
