@@ -567,7 +567,6 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         <ChatInput
           onSendMessage={handleSendMessage}
           isDisabled={isLoading}
-          isAgentTyping={isLoading}
           agentType="unified"
         />
       </div>

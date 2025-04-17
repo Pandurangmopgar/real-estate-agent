@@ -8,14 +8,12 @@ import { fileToBase64 } from '@/lib/helpers';
 interface ChatInputProps {
   onSendMessage: (message: string, imageData?: string) => void;
   isDisabled?: boolean;
-  isAgentTyping?: boolean;
   agentType: 'troubleshooting' | 'tenancy' | 'unified';
 }
 
 export function ChatInput({ 
   onSendMessage, 
-  isDisabled = false, 
-  isAgentTyping = false,
+  isDisabled = false,
   agentType
 }: ChatInputProps) {
   const [message, setMessage] = useState('');
