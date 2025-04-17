@@ -9,7 +9,7 @@ interface ChatInputProps {
   onSendMessage: (message: string, imageData?: string) => void;
   isDisabled?: boolean;
   isAgentTyping?: boolean;
-  agentType: 'troubleshooting' | 'tenancy';
+  agentType: 'troubleshooting' | 'tenancy' | 'unified';
 }
 
 export function ChatInput({ 
@@ -77,7 +77,7 @@ export function ChatInput({
     <div className="relative w-full">
       <div className="flex flex-col rounded-xl border border-primary/10 dark:border-primary/20 bg-card/30 dark:bg-card/20 shadow-md hover:shadow-lg transition-all duration-300 backdrop-blur-sm">
         {/* Image preview area - only shown when an image is selected */}
-        {agentType === 'troubleshooting' && imagePreview && (
+        {(agentType === 'troubleshooting' || agentType === 'unified') && imagePreview && (
           <div className="relative p-4 border-b border-primary/10 dark:border-primary/20">
             <Image 
               src={imagePreview} 
@@ -106,15 +106,17 @@ export function ChatInput({
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
+            placeholder={agentType === 'unified' ? 'Ask about property issues or tenancy questions...' : 
+              `Ask the ${agentType === 'troubleshooting' ? 'Troubleshooting' : 'Tenancy FAQ'} Agent...`}
             className="flex-1 resize-none bg-transparent p-2 text-[15px] font-sans focus:outline-none min-h-[44px] max-h-[120px] leading-relaxed"
             rows={1}
             disabled={isDisabled}
           />
-          {agentType === 'troubleshooting' && !imagePreview && (
+          {(agentType === 'troubleshooting' || agentType === 'unified') && !imagePreview && (
             <div 
               {...getRootProps()}
               className={`flex h-10 w-10 items-center justify-center rounded-full ${isDragActive ? 'bg-primary text-primary-foreground' : 'bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30'} transition-all cursor-pointer shadow-sm hover:shadow border border-primary/10 dark:border-primary/20`}
+              title="Upload an image to use the Troubleshooting Agent"
             >
               <input {...getInputProps()} />
               <ImagePlus className="h-5 w-5 text-primary dark:text-primary" />
@@ -140,9 +142,11 @@ export function ChatInput({
             <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
             <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
           </div>
-          <span>Agent is thinking...</span>
+          <span>Assistant is thinking...</span>
         </div>
       )}
+      
+
     </div>
   );
 }
