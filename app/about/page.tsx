@@ -2,14 +2,13 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { motion, useAnimation, AnimatePresence } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { 
-  ArrowLeft, Cpu, Database, Code, 
-  Home, Users, Shield, Star, 
+  Cpu, Database, Code, 
+  Home, Shield, Star, 
   CheckCircle, MessageSquare, Building, 
-  ImageIcon, ChevronRight, ZapIcon
+  ImageIcon, ChevronRight
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 
@@ -345,7 +344,7 @@ export default function AboutPage() {
                 
                 <h3 className="text-xl font-bold mb-3">Advanced Image Analysis</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Using Google's Gemini multimodal AI, our system can analyze property images with remarkable accuracy, identifying issues that might be missed by the human eye.
+                  Using Google&apos;s Gemini multimodal AI, our system can analyze property images with remarkable accuracy, identifying issues that might be missed by the human eye.
                 </p>
               </AnimatedSection>
               
@@ -384,7 +383,7 @@ export default function AboutPage() {
                 <h3 className="text-xl font-bold">Powered by Advanced Technology</h3>
               </div>
               <p className="text-muted-foreground">
-                All agents are powered by Google's Gemini API for state-of-the-art AI capabilities, with conversation history securely stored in Upstash Redis for seamless persistence across sessions.
+                All agents are powered by Google&apos;s Gemini API for state-of-the-art AI capabilities, with conversation history securely stored in Upstash Redis for seamless persistence across sessions.
               </p>
             </AnimatedSection>
           </div>
