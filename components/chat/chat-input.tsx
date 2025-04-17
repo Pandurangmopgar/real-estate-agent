@@ -26,7 +26,7 @@ export function ChatInput({
       'image/*': ['.jpeg', '.jpg', '.png', '.webp']
     },
     maxFiles: 1,
-    disabled: isDisabled || agentType !== 'troubleshooting',
+    disabled: isDisabled || (agentType !== 'troubleshooting' && agentType !== 'unified'),
     onDrop: (acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
