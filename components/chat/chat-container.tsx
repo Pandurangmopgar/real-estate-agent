@@ -31,8 +31,8 @@ interface ChatContainerProps {
 
 export function ChatContainer({ conversation, onConversationUpdate }: ChatContainerProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false); // Start with tutorial hidden
-  const showTutorialButton = true; // Always show the tutorial button
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showTutorialButton, setShowTutorialButton] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // We no longer filter messages by agent type - all messages are shown in a single thread
@@ -101,10 +101,32 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
   };
 
   useEffect(() => {
-    console.log('ChatContainer rendered with conversation:', conversation.id);
-    console.log('Current messages count:', conversation.messages.length);
-    console.log('Messages:', conversation.messages);
-  }, [conversation.id, conversation.messages, conversation.messages.length]);
+    // Check if the user has seen the tutorial before
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    
+    // If they haven't seen it, show it after a short delay
+    if (!hasSeenTutorial) {
+      const showTimer = setTimeout(() => {
+        setShowTutorial(true);
+        // Mark that they've seen it now
+        localStorage.setItem('hasSeenTutorial', 'true');
+        // Hide the tutorial button after it's been shown
+        setShowTutorialButton(false);
+        
+        // Auto-close the tutorial after 1 second if user doesn't interact
+        const closeTimer = setTimeout(() => {
+          setShowTutorial(false);
+        }, 1000); // 1 second
+        
+        return () => clearTimeout(closeTimer);
+      }, 1500); // Show after 1.5 seconds
+      
+      return () => clearTimeout(showTimer);
+    } else {
+      // If they have seen it before, hide the tutorial button
+      setShowTutorialButton(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Only scroll to bottom when new messages are added
@@ -312,6 +334,17 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     }
   }
 
+  // Automatically close tutorial after a delay
+  useEffect(() => {
+    if (showTutorial) {
+      const autoCloseTimer = setTimeout(() => {
+        setShowTutorial(false);
+      }, 1000); // Close after 1 second if user doesn't interact
+      
+      return () => clearTimeout(autoCloseTimer);
+    }
+  }, [showTutorial]);
+  
   // Tutorial overlay component
   const renderTutorialOverlay = () => {
     if (!showTutorial) return null;
