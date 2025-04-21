@@ -12,7 +12,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
-  agentType: 'troubleshooting' | 'tenancy';
+  agentType: 'troubleshooting' | 'tenancy' | 'general';
   hasImage?: boolean;
   imageUrl?: string;
 }
@@ -182,8 +182,37 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
   async function handleSendMessage(content: string, imageData?: string) {
     if (!content.trim() && !imageData) return;
     
-    // Determine which agent to use based on whether an image is uploaded
-    const agentType = imageData ? 'troubleshooting' : 'tenancy';
+    setIsLoading(true);
+    
+    // Determine which agent to use based on content and image
+    let agentType: 'troubleshooting' | 'tenancy' | 'general';
+    let clarificationNeeded = false;
+    
+    // If image is provided, always use troubleshooting agent
+    if (imageData) {
+      agentType = 'troubleshooting';
+    } else {
+      // Use the routeToAgent function to determine the appropriate agent
+      try {
+        // Import the function dynamically to avoid circular dependencies
+        const { routeToAgent } = await import('@/lib/gemini');
+        const routingResult = await routeToAgent(content);
+        
+        if (routingResult === 'general') {
+          // If clarification is needed, use a general agent type
+          agentType = 'general';
+          clarificationNeeded = true;
+          console.log('Clarification needed for message, using general agent');
+        } else {
+          agentType = routingResult;
+          console.log(`Routed to ${agentType} agent`);
+        }
+      } catch (error) {
+        // If routing fails, default to general agent
+        console.error('Error routing message:', error);
+        agentType = 'general';
+      }
+    }
     
     // Create a new message
     const newUserMessage: Message = {
@@ -197,8 +226,6 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     };
     
     console.log('Sending message:', newUserMessage);
-    
-    setIsLoading(true);
     
     // Add message to local state first for immediate UI update
     const updatedMessages = [...conversation.messages, newUserMessage];
@@ -236,7 +263,10 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
     try {
       let aiResponse;
       
-      if (newUserMessage.agentType === 'troubleshooting' && imageData) {
+      if (clarificationNeeded) {
+        // Generate a clarification response
+        aiResponse = "Hello! I'm your Real Estate Assistant. I can help with property issues or tenancy matters. Could you please provide more details about what you need help with?\n\n**For property issues:**\n- Describe the problem you're experiencing\n- Upload photos of the issue if available\n- Mention when the problem started\n\n**For tenancy questions:**\n- Specify your location/jurisdiction\n- Mention if you're a tenant or landlord\n- Provide details about your specific situation\n\nI'm here to assist you with any real estate related questions!";
+      } else if (newUserMessage.agentType === 'troubleshooting' && imageData) {
         // For troubleshooting agent with image
         console.log('Processing image with troubleshooting agent');
         aiResponse = await analyzeImageAction(imageData, content);
@@ -249,7 +279,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
       }
       
       // Process the response to make it more concise and better formatted
-      const processedResponse = processAIResponse(aiResponse);
+      const processedResponse = clarificationNeeded ? aiResponse : processAIResponse(aiResponse);
       
       // Create AI response message
       const aiMessage: Message = {
@@ -300,7 +330,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
         role: 'assistant',
         content: 'Sorry, I encountered an error while processing your request. Please try again.',
         timestamp: Date.now(),
-        agentType: messages.length > 0 ? messages[messages.length - 1].agentType : 'tenancy',
+        agentType: messages.length > 0 ? messages[messages.length - 1].agentType : 'general',
       };
       
       // Add to local state
@@ -553,7 +583,7 @@ export function ChatContainer({ conversation, onConversationUpdate }: ChatContai
                     animate={{ opacity: 1 }}
                     className="mt-4"
                   >
-                    <LoadingIndicator agentType={messages.length > 0 ? messages[messages.length - 1].agentType : 'tenancy'} />
+                    <LoadingIndicator agentType={messages.length > 0 ? messages[messages.length - 1].agentType : 'general'} />
                   </motion.div>
                 )}
               </motion.div>

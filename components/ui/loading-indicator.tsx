@@ -2,11 +2,25 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 interface LoadingIndicatorProps {
-  agentType: 'troubleshooting' | 'tenancy';
+  agentType: 'troubleshooting' | 'tenancy' | 'general';
 }
 
 export function LoadingIndicator({ agentType }: LoadingIndicatorProps) {
-  const color = agentType === 'troubleshooting' ? 'bg-blue-600' : 'bg-green-600';
+  // Determine color based on agent type
+  let color: string;
+  switch (agentType) {
+    case 'troubleshooting':
+      color = 'bg-blue-600';
+      break;
+    case 'tenancy':
+      color = 'bg-green-600';
+      break;
+    case 'general':
+      color = 'bg-purple-600';
+      break;
+    default:
+      color = 'bg-primary';
+  }
   
   return (
     <motion.div 
@@ -64,7 +78,9 @@ export function LoadingIndicator({ agentType }: LoadingIndicatorProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
       >
-        {agentType === 'troubleshooting' ? 'Troubleshooting Agent' : 'Tenancy FAQ Agent'} is thinking...
+        {agentType === 'troubleshooting' ? 'Troubleshooting Agent' : 
+         agentType === 'tenancy' ? 'Tenancy FAQ Agent' : 
+         'Real Estate Agent'} is thinking...
       </motion.span>
     </motion.div>
   );

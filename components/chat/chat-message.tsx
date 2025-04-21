@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, HomeIcon, Wrench } from 'lucide-react';
+import { User, HomeIcon, Wrench, Building2 } from 'lucide-react';
 import Image from 'next/image';
 import { formatDate } from '@/lib/helpers';
 import { Message } from '@/lib/redis';
@@ -18,8 +18,11 @@ export function ChatMessage({ message }: ChatMessageProps) {
     
     if (message.agentType === 'troubleshooting') {
       return <Wrench className="h-6 w-6" />;
-    } else {
+    } else if (message.agentType === 'tenancy') {
       return <HomeIcon className="h-6 w-6" />;
+    } else {
+      // General agent type
+      return <Building2 className="h-6 w-6" />;
     }
   };
 
@@ -54,9 +57,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-semibold font-sans">
-              {isUser ? 'You' : message.agentType === 'troubleshooting' 
-                ? 'Troubleshooting Agent' 
-                : 'Tenancy FAQ Agent'}
+              {isUser ? 'You' : 
+                message.agentType === 'troubleshooting' ? 'Troubleshooting Agent' :
+                message.agentType === 'tenancy' ? 'Tenancy FAQ Agent' :
+                'Real Estate Agent'}
             </span>
             <span className="text-xs opacity-70 font-sans">
               {formatDate(message.timestamp)}

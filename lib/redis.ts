@@ -12,7 +12,7 @@ export type Message = {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
-  agentType: 'troubleshooting' | 'tenancy';
+  agentType: 'troubleshooting' | 'tenancy' | 'general';
   hasImage?: boolean;
   imageUrl?: string;
 };

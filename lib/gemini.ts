@@ -104,7 +104,7 @@ export async function analyzeImage(imageData: string, prompt: string) {
 }
 
 // Function to determine which agent should handle the request
-export async function routeToAgent(input: string, hasImage: boolean = false): Promise<'troubleshooting' | 'tenancy' | 'clarification'> {
+export async function routeToAgent(input: string, hasImage: boolean = false): Promise<'troubleshooting' | 'tenancy' | 'general'> {
   console.log(`Routing message: "${input.substring(0, 50)}..."${hasImage ? ' (with image)' : ''}`);
   
   // If there's an image, always route to troubleshooting
@@ -141,8 +141,8 @@ export async function routeToAgent(input: string, hasImage: boolean = false): Pr
     return 'tenancy';
   }
   if (troubleshootingScore === 0 && tenancyScore === 0) {
-    console.log('Unable to determine agent type, requesting clarification');
-    return 'clarification';
+    console.log('Unable to determine agent type, using general agent');
+    return 'general';
   }
   
   // Equal scores but not zero

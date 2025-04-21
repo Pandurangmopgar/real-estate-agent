@@ -3,7 +3,7 @@
 import { genAI, safetySettings } from '@/lib/gemini';
 
 // Server action to generate text response
-export async function generateTextResponseAction(prompt: string, agentType: 'troubleshooting' | 'tenancy' = 'troubleshooting') {
+export async function generateTextResponseAction(prompt: string, agentType: 'troubleshooting' | 'tenancy' | 'general' = 'troubleshooting') {
   console.log(`[Server Action] Generating response for ${agentType} with prompt: ${prompt.substring(0, 50)}...`);
   
   try {
@@ -14,8 +14,11 @@ export async function generateTextResponseAction(prompt: string, agentType: 'tro
     
     if (agentType === 'troubleshooting') {
       systemPrompt = 'You are a property troubleshooting expert. Help the user with their property issue.';
-    } else {
+    } else if (agentType === 'tenancy') {
       systemPrompt = 'You are a tenancy law and rental agreement expert. Answer the user\'s question about tenancy rights, rental agreements, or landlord-tenant relations.';
+    } else {
+      // General agent type
+      systemPrompt = 'You are a helpful real estate assistant who can provide general guidance on property matters. If the user asks about specific property issues or tenancy questions, ask for more details to provide better assistance.';
     }
     
     // Generate content with system prompt
@@ -81,7 +84,7 @@ export async function analyzeImageAction(imageData: string, prompt: string) {
 }
 
 // Server action to route messages
-export async function routeToAgentAction(input: string, hasImage: boolean = false): Promise<'troubleshooting' | 'tenancy' | 'clarification'> {
+export async function routeToAgentAction(input: string, hasImage: boolean = false): Promise<'troubleshooting' | 'tenancy' | 'general'> {
   console.log(`[Server Action] Routing message: "${input.substring(0, 50)}..."${hasImage ? ' (with image)' : ''}`);
   
   // If there's an image, always route to troubleshooting
@@ -118,8 +121,8 @@ export async function routeToAgentAction(input: string, hasImage: boolean = fals
     return 'tenancy';
   }
   if (troubleshootingScore === 0 && tenancyScore === 0) {
-    console.log('[Server Action] Unable to determine agent type, requesting clarification');
-    return 'clarification';
+    console.log('[Server Action] Unable to determine agent type, using general agent');
+    return 'general';
   }
   
   // Equal scores but not zero
