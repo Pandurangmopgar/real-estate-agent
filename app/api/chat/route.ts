@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     await addMessageToConversation(conversationId, {
       role: 'user',
       content: message.content,
-      agentType: agentType === 'clarification' ? 'troubleshooting' : agentType,
+      agentType: agentType, // Use the determined agent type directly
       hasImage: !!imageData,
       imageUrl: imageData ? `data:image/jpeg;base64,${imageData}` : undefined,
     });
@@ -60,9 +60,9 @@ export async function POST(request: NextRequest) {
     log('Generating response for agent type:', agentType);
     
     try {
-      if (agentType === 'clarification') {
-        responseText = "I'm not sure if your question is about property troubleshooting or tenancy rights. Could you please provide more details?";
-        log('Using clarification response');
+      if (agentType === 'general') {
+        responseText = "Hello! I'm your Real Estate Assistant. I can help with property issues or tenancy matters. Could you please provide more details about what you need help with?\n\n**For property issues:**\n- Describe the problem you're experiencing\n- Upload photos of the issue if available\n- Mention when the problem started\n\n**For tenancy questions:**\n- Specify your location/jurisdiction\n- Mention if you're a tenant or landlord\n- Provide details about your specific situation\n\nI'm here to assist you with any real estate related questions!";
+        log('Using general agent response');
       } else if (agentType === 'troubleshooting' && imageData) {
         log('Analyzing image...');
         responseText = await analyzeImageAction(
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     const assistantMessage = await addMessageToConversation(conversationId, {
       role: 'assistant',
       content: responseText,
-      agentType: agentType === 'clarification' ? 'troubleshooting' : agentType,
+      agentType: agentType, // Use the determined agent type directly
     });
     
     // We don't need to fetch the updated conversation here since we're just returning the message
